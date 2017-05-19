@@ -4,7 +4,6 @@
 
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
 
 #include <vector>
 #include <iostream>
@@ -98,10 +97,6 @@ void process(cv::Mat &_image) {
     }
   }
 
-  cv::drawKeypoints(_image, matched2, result);
-  cv::imshow("video_name", result);
-  cv::waitKey(10);
-
   cv::Mat inlier_mask, homography;
   std::vector<cv::KeyPoint> inliers1, inliers2;
   std::vector<cv::DMatch> inlier_matches;
@@ -128,8 +123,7 @@ void process(cv::Mat &_image) {
     ROS_INFO("found bb x: %f to %f  y: %f to %f", new_bb[0].x, new_bb[2].x, new_bb[0].y, new_bb[2].y);
     cv::rectangle(result, new_bb[0], new_bb[2], cv::Scalar(0, 0, 255));
   }
-  cv::imshow("video_name", result);
-  cv::waitKey(10);
+
   return;
       
 };
@@ -169,7 +163,6 @@ int main(int argc, char **argv){
   active_ = false;
   reset_ = false;
 
-  cv::namedWindow("video_name", cv::WINDOW_NORMAL);
   ros::Subscriber  bb_sub_ = nh.subscribe("input_bb", 3, bbCallback);
   ros::Subscriber image_sub_ = nh.subscribe("input", 3, imageCallback);
 
