@@ -81,11 +81,10 @@ void resetKeyPoints(cv::Mat &_image){
   delete[] ptMask;
 };
 
-void process(cv::Mat &_image) {
+void process(const cv::Mat& _image, const std_msgs::Header& _header) {
   std::vector<cv::KeyPoint> kp;
   cv::Mat desc;
   detector_->detectAndCompute(_image, cv::noArray(), kp, desc);
-  cv::Mat result = _image.clone();
 
   std::vector< std::vector<cv::DMatch> > matches;
   std::vector<cv::KeyPoint> matched1, matched2;
@@ -120,8 +119,17 @@ void process(cv::Mat &_image) {
   perspectiveTransform(bb_, new_bb, homography);
   if((int)inliers1.size() >= bb_min_inliers) {
     // object found
-    ROS_INFO("found bb x: %f to %f  y: %f to %f", new_bb[0].x, new_bb[2].x, new_bb[0].y, new_bb[2].y);
-    cv::rectangle(result, new_bb[0], new_bb[2], cv::Scalar(0, 0, 255));
+    geometry_msgs::PolygonStamped res;
+    res.header = _header;
+    res.polygon.points.reserve(2);
+    geometry_msgs::Point32 point_lu, point_rd;
+    point_lu.x = new_bb[0].x;
+    point_lu.y = new_bb[0].y;
+    point_rd.x = new_bb[1].x;
+    point_rd.y = new_bb[1].y;    
+    res.polygon.points.push_back(point_lu);
+    res.polygon.points.push_back(point_rd);
+    pub_.publish(res);
   }
 
   return;
@@ -149,7 +157,7 @@ void imageCallback(const sensor_msgs::Image::ConstPtr& _image_msg){
     reset_ = false;
   }
   
-  process(image);
+  process(image, _image_msg->header);
 };
 
 int main(int argc, char **argv){
@@ -166,6 +174,7 @@ int main(int argc, char **argv){
   ros::Subscriber  bb_sub_ = nh.subscribe("input_bb", 3, bbCallback);
   ros::Subscriber image_sub_ = nh.subscribe("input", 3, imageCallback);
 
+  pub_ = nh.advertise<geometry_msgs::PolygonStamped>("output",1000);
   ros::spin();
   return 0;
 }
