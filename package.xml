@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>feature_based_detector</name>
+  <version>0.0.0</version>
+  <description>The feature_based_detector package</description>
+
+  <maintainer email="hori@jsk.imi.i.u-tokyo.ac.jp">Shintaro Hori</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>message_filters</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>message_filters</run_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>
